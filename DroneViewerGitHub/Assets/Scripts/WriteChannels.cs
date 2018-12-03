@@ -15,11 +15,11 @@ public class WriteChannels : MonoBehaviour {
 
 	int[] defaultValue = new int[4];
 
-	private int flagch1 = 0, flagch2 = 0, flagch3 = 0,flagch4 = 0, flagArm = 0, Mov = 0;
+	private int flagch1 = 0, flagch2 = 0, flagch3 = 0,flagch4 = 0, flagArm = 0;
 	private int ch1, ch2, ch3 , ch4;
 	private int ch5 = 1000, ch6, ch7, ch8;
 	private int ch1Old, ch2Old, ch3Old, ch4Old, ch5Old, ch6Old, ch7Old, ch8Old;
-	private int G1 = 50, G2 = 50, G3 = 50, G4 = 50;
+	private int G1 = 60, G2 = 60, G3 = 10, G4 = 60;
 	private int Tr1 = 0, Tr2 = 0, Tr3 = 0, Tr4 = 0;
 
 	public Text G1T;
@@ -212,11 +212,6 @@ public class WriteChannels : MonoBehaviour {
 		g4t.text = ch4.ToString();
 
 		if(ch1 != ch1Old || ch2 != ch2Old || ch3 != ch3Old || ch4 != ch4Old || ch5 != ch5Old || ch6 != ch6Old || ch7 != ch7Old || ch8 != ch8Old){
-			if(ch3 >= 1400){
-				Mov = 1;
-			}else{
-				Mov = 0;
-			}
 			SocketCall();
 			try{
 				string[] stringSeparators = new string[] {","};
@@ -224,12 +219,12 @@ public class WriteChannels : MonoBehaviour {
 				//Debug.Log(Messages[0]);
 				//Debug.Log(Messages[1]);
 				//Debug.Log(Messages[2]);
-				if(Convert.ToDouble(Messages[0]) < 30){
-					Alarme2.text = "Left Ultrassonic detecting collision";
-				}else if(Convert.ToDouble(Messages[1]) < 30){
+				if(Convert.ToDouble(Messages[0]) < 40){
 					Alarme2.text = "Right Ultrassonic detecting collision";
-				}else if(Convert.ToDouble(Messages[2]) < 30){
+				}else if(Convert.ToDouble(Messages[1]) < 40){
 					Alarme2.text = "Front Ultrassonic detecting collision";
+				}else if(Convert.ToDouble(Messages[2]) < 40){
+					Alarme2.text = "Left Ultrassonic detecting collision";
 				}else{
 					Alarme2.text = "";
 				}
@@ -239,7 +234,7 @@ public class WriteChannels : MonoBehaviour {
 
 	public void SocketCall(){
 		
-		message = ch1.ToString() + "," +  ch2.ToString() + "," +  ch3.ToString() +"," +  ch4.ToString() + "," + ch5.ToString() + "," +  ch6.ToString() + "," +  ch7.ToString() + "," +  ch8.ToString() + "," + Mov.ToString();
+		message = ch1.ToString() + "," +  ch2.ToString() + "," +  ch3.ToString() +"," +  ch4.ToString() + "," + ch5.ToString() + "," +  ch6.ToString() + "," +  ch7.ToString() + "," +  ch8.ToString();
 		w.SendString(message);
 		reply = w.RecvString();
 		//Debug.Log(Mov);
@@ -453,25 +448,21 @@ public class WriteChannels : MonoBehaviour {
 	}
 
 	public void Decolar(){
-		for(int i=0; i<=400; i=i+80){
+		for(int i=0; i<=400; i=i+40){
 			ch3 = 1000 + i;
 			SocketCall();
-			StartCoroutine(Delay(0.5F));
+			StartCoroutine(Delay(0.6F));
 		}
-		Mov = 1;
 		SocketCall();
 	}
 
 	public void Pousar(){
 		if(ch3>=1400){
 			int ch3Aux = ch3;
-			for(int i=0; i<=(ch3Aux-1000); i=i+10){
+			for(int i=0; i<=(ch3Aux-1000); i=i+5){
 				ch3 = ch3Aux - i;
-				if(ch3<1400){
-					Mov = 0;
-				}
 				SocketCall();
-				StartCoroutine(Delay(0.1F));
+				StartCoroutine(Delay(0.2F));
 			}
 		}else{
 			while(ch3!=1000){
